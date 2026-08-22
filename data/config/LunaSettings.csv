@@ -35,6 +35,7 @@ remret_gateFragments,Nexus Gate Fragments,Boolean,true,"Destroying a Remnant Nex
 remret_pkDrop,Final Nexus Planetkiller,Boolean,true,"The last Remnant Nexus guards a Domain-era planetkiller: destroying it adds the weapon to the battle salvage (once per campaign; skipped if the vanilla questline already produced it).",,
 remret_pkHandover,Path Handover Offer,Boolean,true,"While you hold the planetkiller, an intel entry offers surrendering it to the Luddic Path for the permanent vanilla pather agreement - holy peace, cells stand down for good.",,
 remret_abyssUnlock,Gate Unlocks Abyss Quest,Boolean,true,"Repairing a Gate with a control fragment makes the abyssal space oddity questline invite eligible (message on next friendly dock) without the academy storyline prerequisite. No effect if the questline already started.",,
+remret_gateTeachesTJ,Gate Teaches Transverse Jump,Boolean,true,"Repairing a Gate also teaches the Transverse Jump ability (normally an academy-storyline reward) if you do not already know it - attuning fracture machinery reveals the principle.",,
 debugHeader,Debug Header,Header,Debug & Testing,"Tools for testing the mod. Debug actions run once when a game is loaded.",,
 remret_debugLogging,Verbose Logging,Boolean,false,"Logs grudge changes, kill tallies, and crisis rolls to starsector.log (prefix [RemRet]).",,
 remret_debugGrantColony,Grant Test Colony on Load,Boolean,false,"If you own no colony when a game loads, transfers the nearest small NPC market to you so the crisis system activates. Turn off again after testing.",,

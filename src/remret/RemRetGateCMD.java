@@ -90,6 +90,20 @@ public class RemRetGateCMD extends BaseCommandPlugin {
 			global.set("$remret_abyssInvite", true);
 		}
 
+		// attuning the gate's fracture machinery teaches the same trick the
+		// academy storyline does: Transverse Jump (ability id fracture_jump)
+		if (RemRetConfig.gateTeachesTransverseJump()
+				&& !Global.getSector().getCharacterData().getAbilities()
+						.contains(com.fs.starfarer.api.impl.campaign.ids.Abilities.TRANSVERSE_JUMP)) {
+			Global.getSector().getCharacterData().addAbility(
+					com.fs.starfarer.api.impl.campaign.ids.Abilities.TRANSVERSE_JUMP);
+			text.addPara("Working through the gate's fracture calibration, your navigator "
+					+ "grasps the underlying principle: a nascent gravity well can be opened "
+					+ "anywhere. Transverse Jump ability gained.",
+					com.fs.starfarer.api.util.Misc.getPositiveHighlightColor());
+			RemRetDebug.log("Transverse Jump granted via gate repair.");
+		}
+
 		RemRetDebug.log("Gate repaired with control fragment: "
 				+ (gate.getContainingLocation() == null ? gate.getName()
 						: gate.getName() + " (" + gate.getContainingLocation().getName() + ")") + ".");
