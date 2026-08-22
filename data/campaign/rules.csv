@@ -7,10 +7,3 @@ ShowDefaultVisual
 FireAll PopulateGateOptions","Your engineering crews shuttle the fragment across and splice its adamantine lattice into the Gate's control systems. For long hours nothing happens - then telltales begin to shine deep within the ring's structure, one by one, as the fragment's stolen knowledge attunes itself to the Gate's secret heart.
 
 A shiver crosses your command display as the hyperspace manifold around the Gate stirs from its long sleep. The fragment itself is spent, burned out by the attunement - but the Gate answers your transponder now, as it once answered the Domain's.",,
-remretAbyssHook,MarketPostDock,"!$global.foundOneslaught
-$faction.id != pirates
-$faction.id != luddic_path
-$faction.id != luddic_church
-!$global.gaDHO_didInvite
-$player.transponderOn
-$global.remret_abyssInvite","Highlight ""message for you""","As your $shipOrFleet trades pings with local traffic control, your comms officer calls for your attention. ""$PlayerSirOrMadam, there's a message for you. It was stored in the comm network until our transponder code was registered to the local authorities.""","gaDHO_hook0:""Patch it through to my TriPad.""","# Remnant Retribution: repairing a Gate makes the abyssal space oddity invite eligible without the academy fracture-jump prerequisite; hands off to the vanilla gaDHO_hook0 chain"

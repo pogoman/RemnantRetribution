@@ -105,7 +105,6 @@ public class RemRetConfig {
 	public static boolean gateFragments() { return b("remret_gateFragments", true); }
 	public static boolean pkDrop()        { return b("remret_pkDrop", true); }
 	public static boolean pkHandover()    { return b("remret_pkHandover", true); }
-	public static boolean abyssUnlock()   { return b("remret_abyssUnlock", true); }
 
 	// ---- debug ----
 

@@ -60,9 +60,6 @@
 	"remret_pkDrop": true,
 	"remret_pkHandover": true,
 
-	# Repairing your first Gate makes the abyssal space oddity questline
-	# invite eligible (if not already unlocked) - no academy storyline needed
-	"remret_abyssUnlock": true,
 
 
 	# Debug (fallback values when LunaLib is not enabled)
