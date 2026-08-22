@@ -83,6 +83,13 @@ public class RemRetGateCMD extends BaseCommandPlugin {
 		GateEntityPlugin.addGateScanned();
 		GateCMD.notifyScanned(gate);
 
+		// touching Gate-network machinery draws the attention that normally
+		// only late academy-story players attract: eligible for the abyssal
+		// space oddity invite (rules.csv hook fires on next friendly dock)
+		if (RemRetConfig.abyssUnlock()) {
+			global.set("$remret_abyssInvite", true);
+		}
+
 		RemRetDebug.log("Gate repaired with control fragment: "
 				+ (gate.getContainingLocation() == null ? gate.getName()
 						: gate.getName() + " (" + gate.getContainingLocation().getName() + ")") + ".");
