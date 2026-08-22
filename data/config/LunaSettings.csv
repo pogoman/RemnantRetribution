@@ -27,6 +27,13 @@ remret_invasionDifficultyPerGrudge,Strike Difficulty per Grudge,Double,0.2,Addit
 remret_invasionMaxDifficulty,Strike Max Difficulty,Double,160,Hard cap on strike force strength before the per-defeat escalation multiplier.,20,600
 remret_escalationPerDefeat,Escalation per Defeat,Double,0.25,"Each defeated strike makes the next this much stronger (0.25 means 25 percent stronger).",0.0,2.0
 remret_grudgeRemainingAfterDefeat,Grudge Kept after Defeat,Double,0.5,"Fraction of grudge remaining after you defeat a strike (0.5 = halved).",0.0,1.0
+intelHeader,Nexus Intel Header,Header,Nexus Tracing,"Back-tracing active hunter-killers to the command Nexuses that dispatch them - map markers you can hunt down, pirate-base style.",,
+remret_nexusIntel,Trace Nexus Locations,Boolean,true,"While hunter-killers are active, your polity periodically traces a surviving Remnant Nexus and marks its system on the map as an intel entry. Entering a system with a live Nexus reveals it immediately.",,
+remret_nexusTraceDays,Days per Trace,Double,60,"Days of active hunter-killer presence between each new Nexus location being revealed (nearest to your colonies first).",10,360
+gateHeader,Gate Header,Header,Gate Control Fragments,"Destroyed Nexus stations yield fragments of their Domain-era gate control cores - each one repairs a single dormant Gate, without the Academy questline (but no free sector-wide unlock either).",,
+remret_gateFragments,Nexus Gate Fragments,Boolean,true,"Destroying a Remnant Nexus adds a Gate Control Fragment to the battle salvage. Take it to any dormant Gate and choose 'Repair the Gate' - only that Gate comes online. The first repair also yields a working Janus Device (required to actually transit).",,
+remret_pkDrop,Final Nexus Planetkiller,Boolean,true,"The last Remnant Nexus guards a Domain-era planetkiller: destroying it adds the weapon to the battle salvage (once per campaign; skipped if the vanilla questline already produced it).",,
+remret_pkHandover,Path Handover Offer,Boolean,true,"While you hold the planetkiller, an intel entry offers surrendering it to the Luddic Path for the permanent vanilla pather agreement - holy peace, cells stand down for good.",,
 debugHeader,Debug Header,Header,Debug & Testing,"Tools for testing the mod. Debug actions run once when a game is loaded.",,
 remret_debugLogging,Verbose Logging,Boolean,false,"Logs grudge changes, kill tallies, and crisis rolls to starsector.log (prefix [RemRet]).",,
 remret_debugGrantColony,Grant Test Colony on Load,Boolean,false,"If you own no colony when a game loads, transfers the nearest small NPC market to you so the crisis system activates. Turn off again after testing.",,

@@ -1,0 +1,4 @@
+name,id,tags,tech/manufacturer,rarity,base price,stack size,cargo space,baseRaidDanger,icon,sound id,sound id drop,plugin,plugin params,desc,order
+Gate Control Fragment,remret_gate_fragment,remret,Domain-era,,100000,1000,1,,graphics/icons/cargo/janus_device.png,ui_cargo_special_ultratech_pickup,ui_cargo_special_ultratech_drop,com.fs.starfarer.api.campaign.impl.items.BaseSpecialItemPlugin,,"A mass of adamantine lattice and quantum circuitry cut from the command core of a destroyed Remnant Nexus. The Remnant network is descended from Domain military infrastructure, and its command nodes retain working knowledge of the Gate system that once bound the Domain together.
+
+Delivered to a dormant Gate and integrated into its control systems by a competent engineering crew, this fragment can attune and restore that Gate to operation - once. The attunement process burns out the fragment entirely.",0

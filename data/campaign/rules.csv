@@ -1,0 +1,9 @@
+id,trigger,conditions,script,text,options,notes
+remretGateRepairOpt,PopulateGateOptions,"!$gateScanned
+!$gateExploded
+RemRetGateCMD hasFragment",,,1:remretGateRepair:Repair the Gate with a control fragment,"# Remnant Retribution: Nexus-salvaged fragment repairs one dormant gate"
+remretGateRepairSel,DialogOptionSelected,$option == remretGateRepair,"RemRetGateCMD repair
+ShowDefaultVisual
+FireAll PopulateGateOptions","Your engineering crews shuttle the fragment across and splice its adamantine lattice into the Gate's control systems. For long hours nothing happens - then telltales begin to shine deep within the ring's structure, one by one, as the fragment's stolen knowledge attunes itself to the Gate's secret heart.
+
+A shiver crosses your command display as the hyperspace manifold around the Gate stirs from its long sleep. The fragment itself is spent, burned out by the attunement - but the Gate answers your transponder now, as it once answered the Domain's.",,

@@ -95,6 +95,17 @@ public class RemRetConfig {
 	public static float escalationPerDefeat()        { return f("remret_escalationPerDefeat"); }
 	public static float grudgeRemainingAfterDefeat() { return f("remret_grudgeRemainingAfterDefeat"); }
 
+	// ---- nexus tracing intel ----
+
+	public static boolean nexusIntel()    { return b("remret_nexusIntel", true); }
+	public static float nexusTraceDays()  { return f("remret_nexusTraceDays"); }
+
+	// ---- gate control fragments ----
+
+	public static boolean gateFragments() { return b("remret_gateFragments", true); }
+	public static boolean pkDrop()        { return b("remret_pkDrop", true); }
+	public static boolean pkHandover()    { return b("remret_pkHandover", true); }
+
 	// ---- debug ----
 
 	public static boolean debugLogging()     { return b("remret_debugLogging", false); }

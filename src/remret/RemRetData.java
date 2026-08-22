@@ -16,6 +16,7 @@ public class RemRetData {
 	public static final String KEY_GRUDGE = "remret_grudge";
 	public static final String KEY_KILLS = "remret_kills";
 	public static final String KEY_DEFEATS = "remret_invasionsDefeated";
+	public static final String KEY_TRACE_TS = "remret_nexusTraceTimestamp";
 
 	public static final String KILL_FRIGATE = "frigate";
 	public static final String KILL_DESTROYER = "destroyer";
@@ -68,5 +69,16 @@ public class RemRetData {
 
 	public static void incrInvasionsDefeated() {
 		Global.getSector().getPersistentData().put(KEY_DEFEATS, getInvasionsDefeated() + 1);
+	}
+
+	/** Campaign-clock timestamp of the last Nexus trace (0 = clock not started). */
+	public static long getNexusTraceTimestamp() {
+		Object val = Global.getSector().getPersistentData().get(KEY_TRACE_TS);
+		if (val instanceof Long) return (Long) val;
+		return 0L;
+	}
+
+	public static void setNexusTraceTimestamp(long timestamp) {
+		Global.getSector().getPersistentData().put(KEY_TRACE_TS, timestamp);
 	}
 }

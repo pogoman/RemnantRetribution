@@ -3,6 +3,9 @@ package remret;
 import com.fs.starfarer.api.campaign.BaseCampaignEventListener;
 import com.fs.starfarer.api.campaign.BattleAPI;
 import com.fs.starfarer.api.campaign.CampaignFleetAPI;
+import com.fs.starfarer.api.campaign.CargoAPI;
+import com.fs.starfarer.api.campaign.FleetEncounterContextPlugin;
+import com.fs.starfarer.api.campaign.SpecialItemData;
 import com.fs.starfarer.api.combat.ShipAPI.HullSize;
 import com.fs.starfarer.api.fleet.FleetMemberAPI;
 import com.fs.starfarer.api.impl.campaign.ids.Factions;
@@ -90,6 +93,78 @@ public class RemRetKillTracker extends BaseCampaignEventListener {
 				RemRetDebug.log("Last Remnant Nexus destroyed - final convergence pending.");
 			}
 		}
+	}
+
+	/**
+	 * Each destroyed Nexus yields a Gate Control Fragment in the battle salvage
+	 * - cut from the station's command core, it can repair one dormant Gate
+	 * (see {@link RemRetGateCMD}). Detection is done from the encounter's own
+	 * battle snapshot rather than shared state, so this does not depend on
+	 * callback ordering with {@link #reportBattleFinished}.
+	 */
+	@Override
+	public void reportEncounterLootGenerated(FleetEncounterContextPlugin plugin, CargoAPI loot) {
+		if (plugin == null || plugin.getBattle() == null) return;
+
+		BattleAPI battle = plugin.getBattle();
+		if (!battle.isPlayerInvolved()) return;
+
+		int nexusKills = 0;
+		for (CampaignFleetAPI other : battle.getNonPlayerSideSnapshot()) {
+			if (other.getFaction() == null) continue;
+			if (!Factions.REMNANTS.equals(other.getFaction().getId())) continue;
+
+			boolean stationFleet = other.isStationMode();
+			for (FleetMemberAPI loss : Misc.getSnapshotMembersLost(other)) {
+				if (stationFleet || loss.isStation()) nexusKills++;
+			}
+		}
+		if (nexusKills <= 0) return;
+
+		if (RemRetConfig.gateFragments()) {
+			loot.addSpecial(new SpecialItemData(RemRetGateCMD.ITEM_ID, null), nexusKills);
+			RemRetDebug.log("Gate Control Fragment recovered from Nexus wreckage (x" + nexusKills + ").");
+		}
+
+		maybeDropPlanetkiller(loot);
+	}
+
+	/**
+	 * The final Nexus was the network's vault: its wreckage yields a
+	 * Domain-era planetkiller, held in stasis since the Collapse. One per
+	 * campaign, only from the last Nexus, and never if the vanilla questline
+	 * already produced the weapon.
+	 */
+	public static final String PK_DROPPED_KEY = "$remret_pkDropped";
+
+	protected void maybeDropPlanetkiller(CargoAPI loot) {
+		if (!RemRetConfig.pkDrop()) return;
+		com.fs.starfarer.api.campaign.rules.MemoryAPI mem =
+				com.fs.starfarer.api.Global.getSector().getMemoryWithoutUpdate();
+		if (mem.getBoolean(PK_DROPPED_KEY)) return;
+		if (mem.getBoolean("$pk_recovered") || mem.getBoolean("$pk_missionCompleted")) {
+			return;
+		}
+
+		// a nexus died in this battle (caller checked); is the network now dark?
+		RemRetNetwork.invalidateCensus();
+		boolean lastNexusDown = RemRetNetwork.liveNexusCount() == 0
+				|| RemRetNetwork.isPendingDeathRattle();
+		if (!lastNexusDown) return;
+
+		loot.addSpecial(new SpecialItemData(
+				com.fs.starfarer.api.impl.campaign.ids.Items.PLANETKILLER, null), 1);
+		com.fs.starfarer.api.Global.getSector().getMemoryWithoutUpdate()
+				.set(PK_DROPPED_KEY, true);
+		RemRetDebug.log("PLANETKILLER recovered from the final Nexus's vault.");
+
+		com.fs.starfarer.api.impl.campaign.intel.MessageIntel msg =
+				new com.fs.starfarer.api.impl.campaign.intel.MessageIntel(
+						"Deep in the shattered Nexus's core, your salvage crews find a stasis "
+						+ "vault older than the network itself - and within it, a Domain-era "
+						+ "planetkiller. The machines were not hoarding it. They were "
+						+ "guarding it.", Misc.getTextColor());
+		com.fs.starfarer.api.Global.getSector().getCampaignUI().addMessage(msg);
 	}
 
 	/** True if this fleet belongs to the mod's own active strike or probe fleet-group. */

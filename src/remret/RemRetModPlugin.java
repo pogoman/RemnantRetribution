@@ -19,6 +19,13 @@ public class RemRetModPlugin extends BaseModPlugin {
 		// battle watcher for Remnant kills (transient campaign listener)
 		Global.getSector().addTransientListener(new RemRetKillTracker());
 
+		// nexus trace clock: reveals Nexus map markers while hunters are active
+		Global.getSector().addTransientScript(new RemRetNexusTraceScript());
+
+		// planetkiller handover offer (transient; only acts while the player
+		// holds the weapon and no permanent pather agreement exists)
+		Global.getSector().addTransientScript(new RemRetPkHandoverScript());
+
 		// if this save already has the crisis intel running, join it now
 		HostileActivityEventIntel intel = HostileActivityEventIntel.get();
 		if (intel != null) {

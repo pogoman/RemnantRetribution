@@ -1,4 +1,7 @@
 {
+	# rules.csv command lookup: lets rules reference RemRetGateCMD by name
+	"ruleCommandPackages":["remret"],
+
 	# Remnant Retribution - tuning values
 	# Threat points awarded per Remnant hull destroyed, by class
 	"remret_pointsFrigate": 1,
@@ -40,6 +43,22 @@
 	"remret_escalationPerDefeat": 0.25,
 	# Fraction of grudge remaining after the retaliation force is defeated
 	"remret_grudgeRemainingAfterDefeat": 0.5,
+
+	# Nexus tracing: while hunter-killers are active, a surviving Nexus is
+	# revealed as a map-marked intel entry every nexusTraceDays days
+	"remret_nexusIntel": true,
+	"remret_nexusTraceDays": 60,
+
+	# Gate Control Fragments: each destroyed Nexus drops one in the battle
+	# salvage; spending it at a dormant Gate brings that Gate (only) online
+	"remret_gateFragments": true,
+
+	# The final Nexus guards a Domain-era planetkiller: its wreckage yields
+	# the weapon (once per campaign, skipped if the vanilla questline already
+	# produced it). While you hold it, the Path offers the permanent vanilla
+	# pather agreement in exchange
+	"remret_pkDrop": true,
+	"remret_pkHandover": true,
 
 	# Debug (fallback values when LunaLib is not enabled)
 	"remret_debugLogging": false,
