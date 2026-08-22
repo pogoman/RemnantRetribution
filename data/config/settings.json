@@ -64,9 +64,6 @@
 	# invite eligible (if not already unlocked) - no academy storyline needed
 	"remret_abyssUnlock": true,
 
-	# Repairing a Gate also teaches the Transverse Jump ability (normally an
-	# academy-storyline reward) if not already known
-	"remret_gateTeachesTJ": true,
 
 	# Debug (fallback values when LunaLib is not enabled)
 	"remret_debugLogging": false,
