@@ -1,0 +1,49 @@
+{
+	# Remnant Retribution - tuning values
+	# Threat points awarded per Remnant hull destroyed, by class
+	"remret_pointsFrigate": 1,
+	"remret_pointsDestroyer": 2,
+	"remret_pointsCruiser": 4,
+	"remret_pointsCapital": 8,
+	# A Remnant Nexus (station) is the single biggest contributor
+	"remret_pointsNexus": 150,
+	# Global multiplier applied to all kill points
+	"remret_pointsMult": 1.0,
+
+	# Monthly event progress: 1 + (grudge / remret_grudgePerMonthlyPoint), capped
+	"remret_grudgePerMonthlyPoint": 75,
+	"remret_maxMonthlyProgress": 8,
+
+	# Hunter-killer fleets only appear once grudge reaches this
+	"remret_minGrudgeForHunters": 50,
+
+	# Hunter-killer presence in player systems: magnitude = grudge / grudgeForFullMagnitude, capped
+	"remret_grudgeForFullMagnitude": 600,
+	"remret_maxMagnitude": 0.5,
+	"remret_maxFleets": 2,
+
+	# Network fragmentation & permanent neutralization
+	"remret_canNeutralize": true,
+	"remret_fragmentationFloor": 0.25,
+	"remret_deathRattleMult": 1.5,
+
+	# Reconnaissance-in-force (the minor event at bar position 300)
+	"remret_minGrudgeForProbe": 50,
+	"remret_probeDifficulty": 25,
+
+	# The retaliation strike (the crisis itself)
+	"remret_minGrudgeForInvasion": 150,
+	"remret_invasionBaseDifficulty": 50,
+	"remret_invasionDifficultyPerGrudge": 0.2,
+	"remret_invasionMaxDifficulty": 160,
+	# Each defeated invasion makes the next one this much stronger (fraction)
+	"remret_escalationPerDefeat": 0.25,
+	# Fraction of grudge remaining after the retaliation force is defeated
+	"remret_grudgeRemainingAfterDefeat": 0.5,
+
+	# Debug (fallback values when LunaLib is not enabled)
+	"remret_debugLogging": false,
+	"remret_debugGrantColony": false,
+	"remret_debugStartingGrudge": 0,
+	"remret_debugForceStrike": false,
+}

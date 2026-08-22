@@ -1,0 +1,11 @@
+{
+	"id": "remret",
+	"name": "Remnant Retribution",
+	"author": "Tristan",
+	"version": "0.2.0",
+	"description": "A late-game colony crisis: the Remnant network takes note of your destruction of its kind. Every Remnant warship you kill - and especially every Nexus - feeds a threat assessment that ends in a retaliatory strike against your colonies. Configurable in-game via LunaLib (optional).",
+	"gameVersion": "0.98a-RC5",
+	"modPlugin": "remret.RemRetModPlugin",
+	"jars": ["jars/RemRet.jar"],
+	"utility": false
+}
