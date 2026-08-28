@@ -59,6 +59,23 @@ still ends the war.
 Prefer the original cruelty? Turn off "Permanent Neutralization Possible" in
 settings for the classic eternal grudge (which also disables the easing).
 
+## Spoils of the hunt
+
+Tearing down the network isn't only risk - each kill is an opportunity. All
+three rewards below are on by default and individually toggleable in settings.
+
+- **Gate Control Fragments** - every Remnant Nexus you destroy drops a fragment
+  of its Domain-era gate control core in the battle salvage. Take one to any
+  dormant Gate and choose *Repair the Gate*: that single Gate comes online - no
+  Academy questline required, but no free sector-wide network either. The first
+  repair also yields a working **Janus Device** (needed to actually transit).
+- **Domain-era planetkiller** - the *last* Remnant Nexus guards a planetkiller;
+  destroying it adds the weapon to the salvage (once per campaign, and skipped
+  if the vanilla questline already produced one).
+- **Path handover** - while you're carrying the planetkiller, an intel entry
+  offers surrendering it to the Luddic Path in exchange for the permanent
+  vanilla pather agreement: holy peace, cells stand down for good.
+
 ## Configuration
 
 All numbers are tunable two ways:
