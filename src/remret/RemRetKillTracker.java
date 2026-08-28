@@ -9,15 +9,15 @@ import com.fs.starfarer.api.campaign.SpecialItemData;
 import com.fs.starfarer.api.combat.ShipAPI.HullSize;
 import com.fs.starfarer.api.fleet.FleetMemberAPI;
 import com.fs.starfarer.api.impl.campaign.ids.Factions;
-import com.fs.starfarer.api.impl.campaign.intel.events.HostileActivityEventIntel;
 import com.fs.starfarer.api.util.Misc;
 
 /**
  * Watches every battle the player is involved in, anywhere in the sector, and
- * converts destroyed Remnant hulls into retribution points. Points are always
- * accumulated in persistent data; if the colony crisis intel is active, they
- * are also injected into the event bar as a one-time factor so the player sees
- * "Remnant forces destroyed: +N" after each battle.
+ * converts destroyed Remnant hulls into retribution points. Every kill feeds the
+ * persistent grudge, and nothing else - kills no longer inject an instant spike
+ * into the crisis bar. The bar still tracks the grudge, but only through the
+ * standing monthly creep in {@link RemRetActivityCause}; a single battle far from
+ * the player's colonies raises the grudge without jolting the colony-crisis bar.
  */
 public class RemRetKillTracker extends BaseCampaignEventListener {
 
@@ -30,7 +30,7 @@ public class RemRetKillTracker extends BaseCampaignEventListener {
 		if (battle == null || !battle.isPlayerInvolved()) return;
 		if (RemRetNetwork.isNeutralized()) return; // the war is over
 
-		int points = 0;
+		int points = 0;       // all kills -> long-term grudge
 		boolean nexusKilled = false;
 		for (CampaignFleetAPI other : battle.getNonPlayerSideSnapshot()) {
 			if (other.getFaction() == null) continue;
@@ -45,6 +45,10 @@ public class RemRetKillTracker extends BaseCampaignEventListener {
 			boolean stationFleet = other.isStationMode();
 			for (FleetMemberAPI loss : Misc.getSnapshotMembersLost(other)) {
 				if (stationFleet || loss.isStation()) {
+					// Nexus destruction feeds the grudge (biggest single source)
+					// but deliberately does NOT slam the crisis bar - otherwise a
+					// single Nexus kill could instantly roll/fire a retaliation.
+					// The last Nexus is handled separately, via the death rattle.
 					points += RemRetConfig.pointsNexus();
 					RemRetData.addKill(RemRetData.KILL_NEXUS);
 					nexusKilled = true;
@@ -72,17 +76,16 @@ public class RemRetKillTracker extends BaseCampaignEventListener {
 
 		if (points <= 0) return;
 
-		points = Math.round(points * RemRetConfig.pointsMult());
-		if (points < 1) points = 1;
-
-		RemRetData.addGrudge(points);
-		RemRetDebug.log("Destroyed Remnant forces: +" + points + " threat (grudge now "
+		float mult = RemRetConfig.pointsMult();
+		int grudgeAdd = Math.max(1, Math.round(points * mult));
+		RemRetData.addGrudge(grudgeAdd);
+		RemRetDebug.log("Destroyed Remnant forces: +" + grudgeAdd + " threat (grudge now "
 				+ (int) RemRetData.getGrudge() + ").");
 
-		HostileActivityEventIntel intel = HostileActivityEventIntel.get();
-		if (intel != null && !intel.isEnded() && !intel.isEnding()) {
-			intel.addFactor(new RemRetKillsOneTimeFactor(points));
-		}
+		// Kills feed only the grudge; the crisis bar is driven by the standing
+		// monthly creep in RemRetActivityCause (grudge-scaled), never spiked
+		// directly by a battle. This keeps clearing Remnants far from your
+		// colonies from lurching the colony-crisis bar upward.
 
 		if (nexusKilled) {
 			RemRetNetwork.invalidateCensus();

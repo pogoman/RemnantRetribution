@@ -20,6 +20,7 @@ import com.fs.starfarer.api.impl.campaign.intel.events.BaseHostileActivityFactor
 import com.fs.starfarer.api.impl.campaign.intel.events.HostileActivityEventIntel;
 import com.fs.starfarer.api.impl.campaign.intel.events.HostileActivityEventIntel.HAERandomEventData;
 import com.fs.starfarer.api.impl.campaign.intel.events.HostileActivityEventIntel.Stage;
+import com.fs.starfarer.api.impl.campaign.intel.MessageIntel;
 import com.fs.starfarer.api.impl.campaign.intel.events.RemnantHostileActivityFactor;
 import com.fs.starfarer.api.impl.campaign.intel.group.FGRaidAction.FGRaidType;
 import com.fs.starfarer.api.impl.campaign.intel.group.FleetGroupIntel;
@@ -209,8 +210,21 @@ public class RemRetHostileActivityFactor extends BaseHostileActivityFactor imple
 			label.setHighlight("substantially lower its threat assessment");
 			label.setHighlightColors(Misc.getPositiveHighlightColor());
 
+			StarSystemAPI sourceSys = getSystemById(RemRetData.getImpendingSourceSystemId());
+			if (sourceSys != null) {
+				LabelAPI src = info.addPara("The strike is being marshaled at a Remnant Nexus in the "
+						+ sourceSys.getNameWithLowercaseType() + ". Destroy it before the fleet "
+						+ "launches and the retaliation is averted entirely. Its location has been "
+						+ "marked.", opad);
+				src.setHighlight(sourceSys.getNameWithLowercaseType(), "averted entirely");
+				src.setHighlightColors(c, Misc.getPositiveHighlightColor());
+			}
+
 			stage.beginResetReqList(info, true, "crisis", opad);
 			info.addPara("The %s is defeated", 0f, c, "retaliation force");
+			if (sourceSys != null) {
+				info.addPara("The %s is destroyed before launch", 0f, c, "source Nexus");
+			}
 			stage.endResetReqList(info, false, "crisis", -1, -1);
 		}
 
@@ -293,7 +307,47 @@ public class RemRetHostileActivityFactor extends BaseHostileActivityFactor imple
 		if (target == null) return;
 		data.custom = target;
 		stage.rollData = data;
+
+		// the retaliation (but not the recon probe) can be averted by destroying
+		// the Nexus it is marshaling from - lock that Nexus in and reveal it
+		if (stage.id == Stage.HA_EVENT) {
+			lockAndRevealSource(target);
+		}
+
 		intel.sendUpdateIfPlayerHasIntel(data, false);
+	}
+
+	/**
+	 * Locks in the surviving Nexus this impending retaliation will launch from
+	 * and reveals its location, so the player can race to destroy it and avert
+	 * the strike before it fires. Does nothing (leaves no lock) if the strike
+	 * would come from a dormant Remnant system with no destructible Nexus.
+	 */
+	protected void lockAndRevealSource(MarketAPI target) {
+		RemRetData.setImpendingSourceSystemId(null);
+
+		SectorEntityToken source = findInvasionSource(target);
+		if (source == null || !(source.getContainingLocation() instanceof StarSystemAPI)) return;
+
+		StarSystemAPI sys = (StarSystemAPI) source.getContainingLocation();
+		if (!RemRetNetwork.isNexusAlive(sys)) return; // dormant fallback / dead station
+
+		RemRetData.setImpendingSourceSystemId(sys.getId());
+
+		// priority reveal: always show the source of an imminent strike, even if
+		// the one-at-a-time trace throttle would otherwise hold it back
+		if (RemRetConfig.nexusIntel() && !RemRetNexusIntel.existsFor(sys)) {
+			Global.getSector().getIntelManager().addIntel(new RemRetNexusIntel(sys));
+			RemRetDebug.log("Impending retaliation source revealed: " + sys.getBaseName() + ".");
+		}
+	}
+
+	protected static StarSystemAPI getSystemById(String id) {
+		if (id == null) return null;
+		for (StarSystemAPI system : Global.getSector().getStarSystems()) {
+			if (system.getId().equals(id)) return system;
+		}
+		return null;
 	}
 
 	public boolean fireEvent(HostileActivityEventIntel intel, EventStageData stage) {
@@ -307,14 +361,40 @@ public class RemRetHostileActivityFactor extends BaseHostileActivityFactor imple
 		}
 		if (target == null || target.getStarSystem() == null) return false;
 
-		SectorEntityToken source = findInvasionSource(target);
-		if (source == null) return false;
-
-		stage.rollData = null;
-
 		if (stage.id == Stage.MINOR_EVENT) {
+			SectorEntityToken source = findInvasionSource(target);
+			if (source == null) return false;
+			stage.rollData = null;
 			return startProbe(source, target, getRandomizedStageRandom(5));
 		}
+
+		// retaliation
+		SectorEntityToken source;
+		String lockedId = RemRetData.getImpendingSourceSystemId();
+		if (lockedId != null) {
+			// a source Nexus was locked in at roll time. If it has since been
+			// destroyed, the strike is AVERTED - it does not relocate to another
+			// Nexus. Strict liveness matters here: killing the source's escorts
+			// can push the bar to 600 inside the same battle callback that killed
+			// the station, while its wreck is still in the system's fleet list -
+			// a mere presence check would launch the strike from the corpse.
+			StarSystemAPI lockedSys = getSystemById(lockedId);
+			if (!RemRetNetwork.isNexusAlive(lockedSys)) {
+				stage.rollData = null;
+				RemRetData.setImpendingSourceSystemId(null);
+				announceAverted();
+				return false;
+			}
+			source = RemnantHostileActivityFactor.getRemnantNexus(lockedSys);
+		} else {
+			// no destructible Nexus was locked (strike sourced from a dormant
+			// Remnant system) - cannot be averted this way
+			source = findInvasionSource(target);
+			if (source == null) return false;
+		}
+
+		stage.rollData = null;
+		RemRetData.setImpendingSourceSystemId(null);
 
 		// with the network decapitated, any strike that still fires is a final
 		// convergence - defeating it neutralizes the Remnants for good
@@ -493,7 +573,7 @@ public class RemRetHostileActivityFactor extends BaseHostileActivityFactor imple
 			totalDifficulty -= diff;
 		}
 
-		GenericRaidFGI raid = new GenericRaidFGI(params);
+		RemRetStrikeFGI raid = new RemRetStrikeFGI(params);
 		raid.setListener(this);
 		Global.getSector().getIntelManager().addIntel(raid);
 
@@ -563,19 +643,62 @@ public class RemRetHostileActivityFactor extends BaseHostileActivityFactor imple
 			// retried next frame batch until conditions are met
 		}
 
-		// if the event rolled as a retaliation but every Remnant presence in the
-		// sector has since been eradicated, call it off
+		// while a retaliation is impending, watch the Nexus it will launch from
 		EventStageData stage = intel.getDataFor(Stage.HA_EVENT);
 		if (stage != null && stage.rollData instanceof HAERandomEventData &&
 				((HAERandomEventData) stage.rollData).factor == this) {
 			HAERandomEventData data = (HAERandomEventData) stage.rollData;
+
+			// a retaliation that became impending before a source was locked -
+			// e.g. the mod was installed or updated mid-campaign with a crisis
+			// already in progress - gets its source established and revealed now,
+			// so it can be averted like any other. (Fresh crises lock at roll.)
+			String sourceId = RemRetData.getImpendingSourceSystemId();
+			if (sourceId == null && data.custom instanceof MarketAPI) {
+				lockAndRevealSource((MarketAPI) data.custom);
+				sourceId = RemRetData.getImpendingSourceSystemId();
+			}
+
+			// aversion: the locked source Nexus has been destroyed before launch
+			if (sourceId != null) {
+				StarSystemAPI sys = getSystemById(sourceId);
+				if (!RemRetNetwork.isNexusAlive(sys)) {
+					avertImpendingStrike();
+					return;
+				}
+			}
+
+			// fallback: no Remnant presence left anywhere to source the strike
 			if (data.custom instanceof MarketAPI) {
 				MarketAPI target = (MarketAPI) data.custom;
 				if (findInvasionSource(target) == null) {
 					intel.resetHA_EVENT();
+					RemRetData.setImpendingSourceSystemId(null);
 				}
 			}
 		}
+	}
+
+	/**
+	 * The player destroyed the source Nexus in time: cancel the impending strike.
+	 * Used by advance(), which must reset the bar itself. (fireEvent's caller
+	 * resets the bar, so that path calls announceAverted() directly.)
+	 */
+	protected void avertImpendingStrike() {
+		intel.resetHA_EVENT();
+		RemRetData.setImpendingSourceSystemId(null);
+		announceAverted();
+	}
+
+	protected void announceAverted() {
+		MessageIntel msg = new MessageIntel(
+				"The Remnant Nexus marshaling the impending retaliation has been destroyed. "
+				+ "The strike against your colonies has been averted.",
+				Misc.getPositiveHighlightColor());
+		msg.setIcon(Global.getSector().getFaction(Factions.REMNANTS).getCrest());
+		Global.getSector().getCampaignUI().addMessage(msg);
+
+		RemRetDebug.log("Impending retaliation averted - source Nexus destroyed before launch.");
 	}
 
 	/**

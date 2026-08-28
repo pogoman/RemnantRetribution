@@ -29,13 +29,29 @@ public class RemRetNetwork {
 	private static int cachedCount = -1;
 	private static long cachedAt = 0;
 
+	/**
+	 * Strict Nexus liveness. A station destroyed moments ago is still present in
+	 * the system's fleet list (despawn happens later in the frame), so checking
+	 * mere presence lets a wreck pass for a live Nexus during the very battle
+	 * callback that killed it - vanilla's own convention for "destroyed station"
+	 * is a station-mode fleet with no surviving members.
+	 */
+	public static boolean isNexusAlive(StarSystemAPI system) {
+		if (system == null) return false;
+		com.fs.starfarer.api.campaign.CampaignFleetAPI nexus =
+				RemnantHostileActivityFactor.getRemnantNexus(system);
+		if (nexus == null) return false;
+		if (!nexus.isAlive()) return false;
+		return !nexus.getFleetData().getMembersListCopy().isEmpty();
+	}
+
 	public static int liveNexusCount() {
 		if (cachedCount >= 0 && Global.getSector().getClock().getElapsedDaysSince(cachedAt) < 1f) {
 			return cachedCount;
 		}
 		int count = 0;
 		for (StarSystemAPI system : Global.getSector().getStarSystems()) {
-			if (RemnantHostileActivityFactor.getRemnantNexus(system) != null) count++;
+			if (isNexusAlive(system)) count++;
 		}
 		cachedCount = count;
 		cachedAt = Global.getSector().getClock().getTimestamp();

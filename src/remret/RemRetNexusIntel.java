@@ -51,6 +51,19 @@ public class RemRetNexusIntel extends BaseIntelPlugin {
 		return false;
 	}
 
+	/**
+	 * True if any traced Nexus is currently revealed and still standing. Used to
+	 * hold the trace clock to one outstanding target at a time - the next Nexus
+	 * is only traced once the current one has been destroyed.
+	 */
+	public static boolean hasOutstandingLive() {
+		for (Object curr : Global.getSector().getIntelManager().getIntel(RemRetNexusIntel.class)) {
+			RemRetNexusIntel intel = (RemRetNexusIntel) curr;
+			if (!intel.destroyed && !intel.isEnding() && !intel.isEnded()) return true;
+		}
+		return false;
+	}
+
 	@Override
 	protected void advanceImpl(float amount) {
 		if (isEnding() || isEnded() || destroyed) return;

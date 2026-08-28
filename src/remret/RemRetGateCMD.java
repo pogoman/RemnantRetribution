@@ -26,11 +26,11 @@ import com.fs.starfarer.api.util.Misc.Token;
  * the dialog option) and as the action ("repair").
  *
  * Repair mirrors what the questline grants, scoped to a single gate: the
- * global gates-active and player-can-use flags are set (both are also gated on
- * a Janus Device in cargo, so the first repair yields one - the fragment's
- * control assembly serving as the Janus-equivalent), but ONLY this gate gets
- * the per-gate scanned flag, and $canScanGates stays unset - so other gates
- * remain dormant until the player spends another fragment (or does the
+ * global gates-active and player-can-use flags are set (that alone is enough -
+ * areGatesActive()/canUseGates() return true on the flag, and only fall back to
+ * checking for a Janus Device in cargo when the flag is unset), but ONLY this
+ * gate gets the per-gate scanned flag, and $canScanGates stays unset - so other
+ * gates remain dormant until the player spends another fragment (or does the
  * questline for real).
  */
 public class RemRetGateCMD extends BaseCommandPlugin {
@@ -66,14 +66,10 @@ public class RemRetGateCMD extends BaseCommandPlugin {
 		cargo.removeItems(CargoItemType.SPECIAL, new SpecialItemData(ITEM_ID, null), 1);
 		AddRemoveCommodity.addItemLossText(new SpecialItemData(ITEM_ID, null), 1, text);
 
-		// both areGatesActive() and canUseGates() require a Janus Device in the
-		// player's cargo on top of the memory flags - the first repair salvages
-		// the fragment's intact control assembly as a working Janus-equivalent
-		if (cargo.getQuantity(CargoItemType.SPECIAL, new SpecialItemData(JANUS_ID, null)) <= 0) {
-			cargo.addSpecial(new SpecialItemData(JANUS_ID, null), 1);
-			AddRemoveCommodity.addItemGainText(new SpecialItemData(JANUS_ID, null), 1, text);
-		}
-
+		// the memory flags alone enable gate use - areGatesActive()/canUseGates()
+		// short-circuit on them and only fall back to a Janus-in-cargo check when
+		// they are unset. No Janus Device is granted (it would just sit in cargo
+		// as an un-removable item).
 		MemoryAPI global = Global.getSector().getMemoryWithoutUpdate();
 		global.set(GateEntityPlugin.GATES_ACTIVE, true);
 		global.set(GateEntityPlugin.PLAYER_CAN_USE_GATES, true);

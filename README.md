@@ -28,7 +28,16 @@ Consequences, scaling with the grudge:
   per campaign (vanilla minor-event rule), needs 50+ grudge.
 - If the crisis fires as a Remnant retaliation, a large strike force -
   launched from the nearest surviving Nexus, or a dormant Remnant system if
-  none survives - attempts to saturation-bombard one of your colonies.
+  none survives - descends on one of your colonies and **saturation-bombards
+  it on arrival**. It's a live event: intercept the armada in your system and
+  destroy it before it reaches the colony, and nothing is bombed.
+
+**Avert it at the source.** When a retaliation becomes impending, it marshals
+from a specific surviving Nexus, and that Nexus's location is revealed on your
+map. Race there and destroy it *before the fleet launches* and the retaliation
+is cancelled outright - no strike, no bombardment. (If the network is already
+down to dormant systems with no destructible Nexus, there's nothing to pre-empt
+and the strike comes regardless.)
 
 Defeating the retaliation force halves the grudge, but each defeated strike
 makes the next one stronger. Machines don't forgive.

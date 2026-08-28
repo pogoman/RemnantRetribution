@@ -81,4 +81,25 @@ public class RemRetData {
 	public static void setNexusTraceTimestamp(long timestamp) {
 		Global.getSector().getPersistentData().put(KEY_TRACE_TS, timestamp);
 	}
+
+	public static final String KEY_IMPENDING_SOURCE = "remret_impendingSourceSystem";
+
+	/**
+	 * Star-system id of the Nexus an impending retaliation will launch from, or
+	 * null if none is locked (no strike impending, or it would come from a
+	 * dormant Remnant system with no destructible Nexus). Destroying this Nexus
+	 * before the strike fires averts it.
+	 */
+	public static String getImpendingSourceSystemId() {
+		Object val = Global.getSector().getPersistentData().get(KEY_IMPENDING_SOURCE);
+		return val instanceof String ? (String) val : null;
+	}
+
+	public static void setImpendingSourceSystemId(String systemId) {
+		if (systemId == null) {
+			Global.getSector().getPersistentData().remove(KEY_IMPENDING_SOURCE);
+		} else {
+			Global.getSector().getPersistentData().put(KEY_IMPENDING_SOURCE, systemId);
+		}
+	}
 }

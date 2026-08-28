@@ -48,6 +48,13 @@ public class RemRetNexusTraceScript implements EveryFrameScript {
 			return;
 		}
 
+		// one traced target at a time: while a revealed Nexus still stands, hold
+		// the clock so the next is only traced after the current one is destroyed
+		if (RemRetNexusIntel.hasOutstandingLive()) {
+			RemRetData.setNexusTraceTimestamp(Global.getSector().getClock().getTimestamp());
+			return;
+		}
+
 		long last = RemRetData.getNexusTraceTimestamp();
 		if (last == 0) {
 			// hunters just became active: start the clock
