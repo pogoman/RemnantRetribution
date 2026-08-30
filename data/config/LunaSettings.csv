@@ -8,7 +8,7 @@ remret_pointsNexus,Remnant Nexus,Int,150,"Threat points for destroying a Remnant
 remret_pointsMult,Global Point Multiplier,Double,1.0,"Multiplies all kill point values. Raise for faster testing, lower for a slower burn.",0.1,10.0
 threatHeader,Threat Header,Header,Standing Threat & Fleet Presence,"How the accumulated grudge translates into ongoing pressure between retaliation strikes.",,
 remret_grudgePerMonthlyPoint,Grudge per Monthly Point,Double,75,"Higher = slower monthly bar creep. Monthly progress = 1 + grudge / this value, capped below.",1,1000
-remret_maxMonthlyProgress,Max Monthly Progress,Int,8,Cap on how many crisis-bar points the standing grudge adds per month.,0,50
+remret_maxMonthlyProgress,Max Monthly Progress,Int,24,Cap on how many crisis-bar points the standing grudge adds per month.,0,50
 remret_minGrudgeForHunters,Min Grudge for Hunters,Double,50,"Hunter-killer fleets stay away until the grudge reaches this. Below it you only see the monthly bar creep.",0,1000
 remret_grudgeForFullMagnitude,Grudge for Full Magnitude,Double,600,Grudge at which hunter-killer fleet presence in your systems reaches its cap.,50,3000
 remret_maxMagnitude,Max Fleet Magnitude,Double,0.5,"Cap on hostile fleet presence magnitude per system (vanilla crises use ~0.5).",0.0,1.0

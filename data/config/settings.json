@@ -15,7 +15,7 @@
 
 	# Monthly event progress: 1 + (grudge / remret_grudgePerMonthlyPoint), capped
 	"remret_grudgePerMonthlyPoint": 75,
-	"remret_maxMonthlyProgress": 8,
+	"remret_maxMonthlyProgress": 24,
 
 	# Hunter-killer fleets only appear once grudge reaches this
 	"remret_minGrudgeForHunters": 50,
