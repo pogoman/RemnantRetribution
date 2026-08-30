@@ -35,8 +35,10 @@ public class RemRetPkHandoverScript implements EveryFrameScript {
 		if (!RemRetConfig.pkHandover()
 				|| HA_CMD.playerPatherAgreementIsPermanent()
 				|| !RemRetPkHandoverIntel.playerHasPk()) {
-			if (existing != null && !existing.isEnding() && !existing.isEnded()) {
-				existing.endAfterDelay();
+			// unconditional: also sweeps up entries left stuck "ending" by the
+			// pre-fix endAfterDelay(), repairing saves made before this change
+			if (existing != null) {
+				existing.dismiss();
 			}
 			return;
 		}
@@ -48,10 +50,17 @@ public class RemRetPkHandoverScript implements EveryFrameScript {
 		}
 	}
 
+	/**
+	 * Scans the whole intel list rather than the by-class accessor, so an entry
+	 * already marked "ending" is still found and can be cleared - the by-class
+	 * lookup is not documented to include those.
+	 */
 	protected RemRetPkHandoverIntel getIntel() {
 		for (com.fs.starfarer.api.campaign.comm.IntelInfoPlugin p
-				: Global.getSector().getIntelManager().getIntel(RemRetPkHandoverIntel.class)) {
-			return (RemRetPkHandoverIntel) p;
+				: Global.getSector().getIntelManager().getIntel()) {
+			if (p instanceof RemRetPkHandoverIntel) {
+				return (RemRetPkHandoverIntel) p;
+			}
 		}
 		return null;
 	}

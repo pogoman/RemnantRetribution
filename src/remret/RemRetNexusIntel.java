@@ -37,6 +37,33 @@ public class RemRetNexusIntel extends BaseIntelPlugin {
 
 	public RemRetNexusIntel(StarSystemAPI system) {
 		this.system = system;
+		// The intel manager never advances intel plugins; advanceImpl() and the
+		// endAfterDelay() countdown only run if the intel is also registered as
+		// a sector script (vanilla RaidIntel does the same). Non-transient, so
+		// the registration persists in the save alongside the intel itself.
+		Global.getSector().addScript(this);
+	}
+
+	@Override
+	protected void notifyEnded() {
+		super.notifyEnded();
+		Global.getSector().removeScript(this);
+	}
+
+	/**
+	 * Load-time repair for saves from versions where the constructor did not
+	 * register the intel as a script: without that, advanceImpl() never ran, so
+	 * a destroyed Nexus was never noticed and - via {@link #hasOutstandingLive()}
+	 * holding the trace clock - no further Nexus was ever traced.
+	 */
+	public static void repairScriptRegistration() {
+		for (Object curr : Global.getSector().getIntelManager().getIntel(RemRetNexusIntel.class)) {
+			RemRetNexusIntel intel = (RemRetNexusIntel) curr;
+			if (intel.isEnded()) continue;
+			if (Global.getSector().getScripts().contains(intel)) continue;
+			Global.getSector().addScript(intel);
+			RemRetDebug.log("Re-registered Nexus intel script for " + intel.getSystem().getBaseName() + ".");
+		}
 	}
 
 	public StarSystemAPI getSystem() {
